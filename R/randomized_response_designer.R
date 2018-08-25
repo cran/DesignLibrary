@@ -5,17 +5,21 @@
 #' @details 
 #' \code{randomized_response_designer} employs a specific variation of randomized response designs in which respondents are required to report a fixed answer to the sensitive question with a given probability (see Blair, Imai, and Zhou (2015) for alternative applications and estimation strategies).
 #' 
+#' See \href{https://declaredesign.org/library/articles/randomized_response.html}{vignette online}.
+#' 
 #' @param N An integer. Size of sample.
-#' @param prob_forced_yes A number. Probability of a forced yes.
-#' @param prevalence_rate A number. Probability that individual has the sensitive trait.
-#' @param withholding_rate A number. Probability that an individual with the sensitive trait hides it.
+#' @param prob_forced_yes A number in [0,1]. Probability of a forced yes.
+#' @param prevalence_rate A number in [0,1]. Probability that individual has the sensitive trait.
+#' @param withholding_rate A number in [0,1]. Probability that an individual with the sensitive trait hides it.
 #' @return A randomized response design.
 #' @author \href{https://declaredesign.org/}{DeclareDesign Team}
 #' @concept experiment
 #' @concept descriptive
-#' @import DeclareDesign stats utils fabricatr estimatr randomizr
+#' @importFrom DeclareDesign declare_assignment declare_diagnosands declare_estimand declare_estimator declare_population declare_potential_outcomes declare_reveal set_diagnosands tidy_estimator
+#' @importFrom fabricatr fabricate draw_binary
+#' @importFrom randomizr conduct_ra 
+#' @importFrom estimatr tidy 
 #' @export
-#'
 #' @examples
 #' # Generate a randomized response design using default arguments:
 #' randomized_response_design <- randomized_response_designer()
@@ -25,7 +29,6 @@ randomized_response_designer <- function(N = 1000,
                                          prevalence_rate = .1,
                                          withholding_rate = .5
 ){
-  sensitive_trait <- withholder <- Y <- Z <- bias <- NULL
   if(prob_forced_yes < 0 || prob_forced_yes > 1)   stop("prob_forced_yes must be in [0,1]")
   if(prevalence_rate < 0 || prevalence_rate > 1)   stop("prevalence_rate must be in [0,1]")
   if(withholding_rate < 0 || withholding_rate > 1) stop("withholding_rate must be in [0,1]")
@@ -37,7 +40,7 @@ randomized_response_designer <- function(N = 1000,
       withholder = draw_binary(prob = sensitive_trait * withholding_rate, N = N),
       direct_answer =  sensitive_trait - withholder
     )
-    potentials <- declare_potential_outcomes(
+    potential_outcomes <- declare_potential_outcomes(
       Y_Z_Yes = 1,
       Y_Z_Truth = sensitive_trait
     )
@@ -69,7 +72,7 @@ randomized_response_designer <- function(N = 1000,
     )
     
     # Design
-    randomized_response_design <- population + assignment + potentials +
+    randomized_response_design <- population + assignment + potential_outcomes +
       estimand + declare_reveal(Y, Z) +
       estimator_randomized_response + estimator_direct_question
     
@@ -98,6 +101,7 @@ attr(randomized_response_designer,"shiny_arguments") <-
     withholding_rate = c(.5,seq(.05,.95,.1))
   )
 attr(randomized_response_designer,"description") <- "
-<p> A forced randomized response design that measures the share of individuals with a given trait (whose value is defined by <code>prevalence_trait</code>) in a population of size <code>N</code>. Probability of forced response ('Yes') is given by <code>prob_forced_yes</code>, and rate at which individuals with trait lie is defined by <code>withholding_rate</code>.
+<p> A forced randomized response design that measures the share of individuals 
+with a given trait (<code>prevalence_trait</code>) in a population of size <code>N</code>. Probability of forced response ('Yes') is given by <code>prob_forced_yes</code>, and rate at which individuals with trait lie is defined by <code>withholding_rate</code>.
 "
 
