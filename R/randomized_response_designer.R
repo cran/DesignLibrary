@@ -18,7 +18,6 @@
 #' @importFrom DeclareDesign declare_assignment declare_diagnosands declare_estimand declare_estimator declare_population declare_potential_outcomes declare_reveal set_diagnosands tidy_estimator
 #' @importFrom fabricatr fabricate draw_binary
 #' @importFrom randomizr conduct_ra 
-#' @importFrom estimatr tidy 
 #' @export
 #' @examples
 #' # Generate a randomized response design using default arguments:
@@ -96,7 +95,7 @@ attr(randomized_response_designer,"tips") <-
 attr(randomized_response_designer,"shiny_arguments") <-
   list(
     N = c(1000, 1500, 2000, 2500),
-    prob_forced_yes = c(.6,seq(.1,.9,.1)),
+    prob_forced_yes = c(.6,seq(.1,.5,.1),seq(.7,.9,.1)),
     prevalence_rate = c(.1,seq(.05,.95,.1)),
     withholding_rate = c(.5,seq(.05,.95,.1))
   )

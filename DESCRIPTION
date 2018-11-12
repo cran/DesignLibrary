@@ -1,7 +1,7 @@
 Package: DesignLibrary
 Type: Package
 Title: Library of Research Designs
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(person("Graeme", "Blair", email = "graeme.blair@ucla.edu", role = c("aut")),
              person("Jasper", "Cooper", email = "jjc2247@columbia.edu", role = c("aut", "cre")),
              person("Alexander", "Coppock", email = "alex.coppock@yale.edu", role = c("aut")),
@@ -20,13 +20,13 @@ URL: https://declaredesign.org/library/,
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Depends: DeclareDesign (>= 0.10.0), R (>= 3.4.0), randomizr (>=
-        0.16.1), fabricatr (>= 0.4.0), estimatr (>= 0.10.0)
-Imports: rlang
-Suggests: testthat, broom
-RoxygenNote: 6.1.0
+Depends: DeclareDesign (>= 0.12.0), R (>= 3.4.0), randomizr (>=
+        0.16.1), fabricatr (>= 0.6.0), estimatr (>= 0.14.0)
+Imports: generics, rlang
+Suggests: testthat
+RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2018-08-25 02:32:38 UTC; jaspercooper
+Packaged: 2018-11-12 14:19:28 UTC; jaspercooper
 Author: Graeme Blair [aut],
   Jasper Cooper [aut, cre],
   Alexander Coppock [aut],
@@ -36,4 +36,4 @@ Author: Graeme Blair [aut],
   Lily Medina [aut]
 Maintainer: Jasper Cooper <jjc2247@columbia.edu>
 Repository: CRAN
-Date/Publication: 2018-08-25 04:17:21 UTC
+Date/Publication: 2018-11-12 14:50:03 UTC
