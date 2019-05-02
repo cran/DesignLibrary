@@ -30,6 +30,7 @@
 #' @param control_mean A number. Average outcome in control.
 #' @param ate A number. Average treatment effect. Alternative to specifying \code{treatment_mean}. Note that \code{ate} is an argument for the designer but it does not appear as an argument in design code (design code uses \code{control_mean} and \code{treatment_mean} only).
 #' @param treatment_mean A number. Average outcome in treatment. If \code{treatment_mean} is not provided then it is calculated as \code{control_mean + ate}. If both \code{ate} and  \code{treatment_mean} are provided then only  \code{treatment_mean} is used. 
+#' @param args_to_fix A character vector. Names of arguments to be args_to_fix in design.
 #' @param verbose Logical. If TRUE, prints intra-cluster correlation implied by design parameters.
 #' @return A block cluster two-arm design.
 #' @author \href{https://declaredesign.org/}{DeclareDesign Team}
@@ -50,10 +51,6 @@
 #' # A design in which number of clusters of cluster size is not specified
 #' # but N and block size are:        
 #' block_cluster_guess <- block_cluster_two_arm_designer(N = 24, N_blocks = 3)
-#' # A design in which cluster size is not specified but N and block size are 
-#' # and target N is not met returns an error:        
-#' \dontrun{block_cluster_guess_2 <- block_cluster_two_arm_designer(N = 24,
-#' N_blocks = 3, N_clusters_in_block = 3)}
 #'
 
 block_cluster_two_arm_designer <- function(N = NULL,
@@ -70,7 +67,8 @@ block_cluster_two_arm_designer <- function(N = NULL,
                                            control_mean = 0,
                                            ate = 0,
                                            treatment_mean = control_mean + ate,
-                                           verbose = TRUE
+                                           verbose = TRUE,
+                                           args_to_fix = NULL
 ){  
   
   if(any(N_blocks < 1, N_clusters_in_block < 1, N_i_in_cluster < 1) ||
@@ -87,7 +85,7 @@ block_cluster_two_arm_designer <- function(N = NULL,
     if(length(assignment_probs) == 1) assignment_probs <- rep(assignment_probs, N_blocks)
     else stop("assignment_probs must either be a scalar, or of length N_blocks.")
   }
-  if(any(assignment_probs <= 0 || assignment_probs >= 1)) stop("all assignment_probs must be in (0,1)")
+  if(any(assignment_probs <= 0) || any(assignment_probs >= 1)) stop("all assignment_probs must be in (0,1)")
   
   if(rho< -1 || rho > 1) stop("correlation must be in [-1,1]")
   if(!is.null(N)) {design_N <- ifelse(length(N_i_in_cluster)>1, sum(N_i_in_cluster), sum(N_i_in_cluster*N_blocks*N_clusters_in_block))
@@ -101,7 +99,7 @@ block_cluster_two_arm_designer <- function(N = NULL,
           stop(paste0("You specified ",N_blocks," blocks with ",length(N_clusters_in_block)," clusters in them. Therefore N_i_in_cluster should be of length 1 or of length ",length(N_clusters_in_block)*N_blocks))
         }
       } else {
-        if(N_clusters_in_block*N_blocks != length(N_i_in_cluster)){
+        if(length(N_clusters_in_block*N_blocks) != length(N_i_in_cluster)){
           stop(paste0("You specified ",N_blocks," blocks with ",N_clusters_in_block," clusters in them. Therefore N_i_in_cluster should be of length 1 or of length ",N_clusters_in_block*N_blocks))
         }
       }
@@ -131,7 +129,7 @@ block_cluster_two_arm_designer <- function(N = NULL,
       i = add_level(
         N = N_i_in_cluster,
         u_0 = rnorm(N) * sd_i_0,
-        u_1 = rnorm(n = N, mean = rho * u_0, sd = sqrt(1 - rho^2)) * sd_i_1)
+        u_1 = rnorm(n = N, mean = rho * scale(u_0), sd = sqrt(1 - rho^2)) * sd_i_1)
     )
     
     potential_outcomes <- declare_potential_outcomes(
@@ -143,6 +141,7 @@ block_cluster_two_arm_designer <- function(N = NULL,
     
     # D: Data Strategy
     assignment <- declare_assignment(block_prob = assignment_probs, blocks = blocks, clusters = clusters)
+    
     reveal <- declare_reveal(Y, Z)
     
     # A: Answer Strategy
@@ -161,12 +160,42 @@ block_cluster_two_arm_designer <- function(N = NULL,
   
   attr(block_cluster_two_arm_design, "code") <- 
     construct_design_code(block_cluster_two_arm_designer, match.call.defaults(),
+                          args_to_fix = args_to_fix,
                           exclude_args = c("ate", "sd", "N"),
                           arguments_as_values = TRUE)
   
   block_cluster_two_arm_design
   
 }
+
+attr(block_cluster_two_arm_designer, "definitions") <- data.frame(
+  names = c("N","N_blocks","N_clusters_in_block","N_i_in_cluster","sd","sd_block",
+            "sd_cluster","sd_i_0","sd_i_1","rho","assignment_probs","control_mean",
+            "ate","treatment_mean","verbose","args_to_fix"),
+  tips  = c("Total number of units",
+            "Number of blocks",
+            "Number of clusters in each block",
+            "Number of units in each cluster",
+            "Overall standard deviation",
+            "Standard deviation of block level shocks",
+            "Standard deviation of cluster level shock",
+            "Standard deviation of individual level shock in control",
+            "Standard deviation of individual level shock in treatment",
+            "Correlation in individual shock between potential outcomes for treatment and control",
+            "Treatment assignment probability for each block",
+            "Average outcome in control",
+            "Average treatment effect",
+            "Average outcome in treatment",
+            "If TRUE, prints intra-cluster correlation",
+            "Names of arguments to be args_to_fix"),
+  class = c(rep("integer", 4), rep("numeric", 10), "logical", "character"),
+  vector = c(FALSE, FALSE, TRUE, TRUE, rep(FALSE, 6), TRUE, rep(FALSE, 4), TRUE),
+  min = c(2, rep(1, 3), rep(0, 5), -1, 0, -Inf, -Inf, -Inf, NA, NA),
+  max = c(rep(Inf, 9), 1, 1, Inf, Inf, Inf, NA, NA),
+  inspector_min = c(100, 1, 100, 1, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, NA, NA),
+  inspector_step = c(100, 1, 50, 10, rep(.2, 10), NA, NA),
+  stringsAsFactors = FALSE
+)
 
 attr(block_cluster_two_arm_designer, "shiny_arguments") <-
   list(
@@ -176,13 +205,6 @@ attr(block_cluster_two_arm_designer, "shiny_arguments") <-
     ate = c(0, .1, .3)
   )
 
-attr(block_cluster_two_arm_designer, "tips") <-
-  list(
-    N_blocks = "Number of blocks",
-    N_clusters_in_block = "Number of clusters in each block",
-    N_i_in_cluster = "Number of units in each cluster",
-    ate = "The average treatment effect"
-  )
 attr(block_cluster_two_arm_designer, "description") <- "
 <p> A two arm blocked and clustered experiment with <code>N_blocks</code> blocks, 
 each containing <code>N_clusters_in_block</code> clusters. Each cluster in turn contains 
