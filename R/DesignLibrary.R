@@ -6,6 +6,8 @@
 #' 
 #' @name DesignLibrary
 #' 
+#' @description Library of Research Designs
+#' 
 #' @importFrom utils globalVariables
 #' 
 #' 
@@ -23,6 +25,7 @@ globalVariables(
     "clusters",
     "e1",
     "e2",
+    "estimate",
     "G",
     "latent",
     "M",

@@ -1,3 +1,13 @@
+# DesignLibrary 0.1.5.5
+
+* Removed broken URL in package documentation
+
+# DesignLibrary 0.1.5
+
+* fixed bug in randomized_response_designer diagnosands
+
+* deprecated `label_estimator()`
+
 # DesignLibrary 0.1.4
 
 * updated tests to be compatible with rlang 0.3.0

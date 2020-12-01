@@ -1,7 +1,7 @@
 Package: DesignLibrary
 Type: Package
 Title: Library of Research Designs
-Version: 0.1.4
+Version: 0.1.5.5
 Authors@R: c(person("Graeme", "Blair", email = "graeme.blair@ucla.edu", role = c("aut")),
              person("Jasper", "Cooper", email = "jjc2247@columbia.edu", role = c("aut", "cre")),
              person("Alexander", "Coppock", email = "alex.coppock@yale.edu", role = c("aut")),
@@ -24,9 +24,9 @@ Depends: DeclareDesign (>= 0.17.0), R (>= 3.4.0), randomizr (>=
         0.16.1), fabricatr (>= 0.8.0), estimatr (>= 0.16.0)
 Imports: generics, rlang, glue
 Suggests: testthat
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 NeedsCompilation: no
-Packaged: 2019-06-17 18:10:15 UTC; jaspercooper
+Packaged: 2020-12-01 16:36:15 UTC; jaspercooper
 Author: Graeme Blair [aut],
   Jasper Cooper [aut, cre],
   Alexander Coppock [aut],
@@ -36,4 +36,4 @@ Author: Graeme Blair [aut],
   Lily Medina [aut]
 Maintainer: Jasper Cooper <jjc2247@columbia.edu>
 Repository: CRAN
-Date/Publication: 2019-06-17 18:50:05 UTC
+Date/Publication: 2020-12-01 17:30:16 UTC
