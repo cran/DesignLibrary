@@ -5,7 +5,7 @@
 #' @details 
 #' \code{randomized_response_designer} employs a specific variation of randomized response designs in which respondents are required to report a args_to_fix answer to the sensitive question with a given probability (see Blair, Imai, and Zhou (2015) for alternative applications and estimation strategies).
 #' 
-#' See \href{https://declaredesign.org/library/articles/randomized_response.html}{vignette online}.
+#' See \href{https://declaredesign.org/r/designlibrary/articles/randomized_response.html}{vignette online}.
 #' 
 #' @param N An integer. Size of sample.
 #' @param prob_forced_yes A number in [0,1]. Probability of a forced yes.
@@ -16,7 +16,7 @@
 #' @author \href{https://declaredesign.org/}{DeclareDesign Team}
 #' @concept experiment
 #' @concept descriptive
-#' @importFrom DeclareDesign declare_assignment declare_diagnosands declare_estimand declare_estimator declare_population declare_potential_outcomes declare_reveal set_diagnosands label_estimator
+#' @importFrom DeclareDesign declare_assignment declare_diagnosands declare_inquiry declare_estimator declare_population declare_potential_outcomes declare_reveal set_diagnosands label_estimator
 #' @importFrom fabricatr fabricate draw_binary
 #' @importFrom randomizr conduct_ra 
 #' @export
@@ -48,7 +48,7 @@ randomized_response_designer <- function(N = 1000,
     )
     
     # I: Inquiry
-    estimand <- declare_estimand(true_rate = mean(sensitive_trait))
+    estimand <- declare_inquiry(true_rate = mean(sensitive_trait))
     
     # D: Data Strategy
     assignment <- declare_assignment(
@@ -62,7 +62,7 @@ randomized_response_designer <- function(N = 1000,
         function(data) with(
           data,
           data.frame(estimate = (mean(Y) - prob_forced_yes) / (1 - prob_forced_yes)))),
-      estimand = estimand,
+      inquiry = estimand,
       label = "Forced Randomized Response"
     )
     
@@ -70,7 +70,7 @@ randomized_response_designer <- function(N = 1000,
       handler = label_estimator(function(data) with(
         data,
         data.frame(estimate = mean(direct_answer)))),
-      estimand = estimand,
+      inquiry = estimand,
       label = "Direct Question"
     )
     

@@ -2,7 +2,7 @@
 #'
 #' Builds a design with sample from population of size \code{N}. The average treatment effect local to the cutpoint is equal to \code{tau}. It allows for specification of the order of the polynomial regression (\code{poly_reg_order}), cutoff value on the running variable (\code{cutoff}), and size of bandwidth around the cutoff (\code{bandwidth}). By providing a vector of numbers to \code{control_coefs} and \code{treatment_coefs}, users can also specify polynomial regression coefficients that generate the expected control and treatment potential outcomes given the running variable.
 #' @details 
-#' See \href{https://declaredesign.org/library/articles/regression_discontinuity.html}{vignette online}.
+#' See \href{https://declaredesign.org/r/designlibrary/articles/regression_discontinuity.html}{vignette online}.
 #' 
 #' @param N An integer. Size of population to sample from.
 #' @param tau A number. Difference in potential outcomes functions at the threshold.
@@ -17,7 +17,7 @@
 #' @author \href{https://declaredesign.org/}{DeclareDesign Team}
 #' @concept observational
 #' @concept regression discontinuity
-#' @importFrom DeclareDesign declare_estimand declare_estimator declare_population declare_potential_outcomes declare_reveal declare_sampling
+#' @importFrom DeclareDesign declare_inquiry declare_estimator declare_population declare_potential_outcomes declare_reveal declare_sampling
 #' @importFrom fabricatr fabricate 
 #' @importFrom randomizr conduct_ra draw_rs 
 #' @importFrom estimatr lm_robust
@@ -63,7 +63,7 @@ regression_discontinuity_designer <- function(
     reveal_Y <- declare_reveal(Y)
     
     # I: Inquiry
-    estimand <- declare_estimand(
+    estimand <- declare_inquiry(
       LATE = po_function(X = 0, coefs = treatment_coefs, tau = tau) - 
         po_function(X = 0, coefs = control_coefs, tau = 0))
     
@@ -76,7 +76,7 @@ regression_discontinuity_designer <- function(
       formula = Y ~ poly(X, poly_reg_order) * Z,
       model = lm_robust,
       term = "Z",
-      estimand = estimand)
+      inquiry = estimand)
     
     # Design
     regression_discontinuity_design <- 

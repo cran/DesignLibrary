@@ -14,7 +14,7 @@
 #' 
 #' Key limitations: The designer assumes covariance between potential outcomes at the individual level only.
 #' 
-#' See \href{https://declaredesign.org/library/articles/block_cluster_two_arm.html}{vignette online}.
+#' See \href{https://declaredesign.org/r/designlibrary/articles/block_cluster_two_arm.html}{vignette online}.
 #' 
 #' @param N An integer. Total number of units. Usually not specified as \code{N} is determined by \code{N_blocks}, \code{N_clusters_in_block}, and \code{N_i_in_cluster}. If \code{N_blocks}, and  \code{N_clusters_in_block}, and \code{N_i_in_cluster} are specified then \code{N} is overridden. If these are not specified and \code{N} is specified then designer attempts to guess sizes of levels to approximate \code{N}, with preference for a design without blocks or clusters. 
 #' @param N_blocks An integer. Number of blocks. Defaults to 1 for no blocks. 
@@ -36,7 +36,7 @@
 #' @author \href{https://declaredesign.org/}{DeclareDesign Team}
 #' @concept experiment 
 #' @concept blocking
-#' @importFrom DeclareDesign declare_assignment declare_estimand declare_estimator declare_population declare_potential_outcomes declare_reveal
+#' @importFrom DeclareDesign declare_assignment declare_inquiry declare_estimator declare_population declare_potential_outcomes declare_reveal
 #' @importFrom fabricatr fabricate add_level
 #' @importFrom randomizr conduct_ra 
 #' @importFrom estimatr lm_robust
@@ -137,7 +137,7 @@ block_cluster_two_arm_designer <- function(N = NULL,
         Z * (treatment_mean + u_1 + u_b + u_c) )
     
     # I: Inquiry
-    estimand <- declare_estimand(ATE = mean(Y_Z_1 - Y_Z_0))
+    estimand <- declare_inquiry(ATE = mean(Y_Z_1 - Y_Z_0))
     
     # D: Data Strategy
     assignment <- declare_assignment(block_prob = assignment_probs, blocks = blocks, clusters = clusters)
@@ -147,7 +147,7 @@ block_cluster_two_arm_designer <- function(N = NULL,
     # A: Answer Strategy
     estimator <- declare_estimator(
       Y ~ Z,
-      estimand = estimand,
+      inquiry = estimand,
       model = lm_robust,
       fixed_effects = ~ blocks,
       clusters = clusters
